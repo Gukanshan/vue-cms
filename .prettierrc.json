@@ -4,5 +4,8 @@
   "printWidth": 80,
   "singleQuote": true,
   "trailingComma": "es5",
-  "semi": false
+  "semi": false,
+  "quoteProps": "as-needed",
+  "bracketSpacing": true
+
 }
