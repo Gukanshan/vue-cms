@@ -9,7 +9,6 @@ const request = new HYRequest({
   interceptors: {
     requestSuccessFn: (config) => {
       const token = localCache.getCache(LOGIN_TOKEN)
-      console.log(token)
       if (config.headers && token) {
         config.headers.Authorization = `Bearer ${token}`
       }

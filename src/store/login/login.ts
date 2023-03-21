@@ -19,8 +19,8 @@ interface ILoginState {
 const useLoginStore = defineStore('login', {
   state: (): ILoginState => ({
     token: localCache.getCache(LOGIN_TOKEN) ?? '',
-    userInfo: {},
-    userMenus: [],
+    userInfo: localCache.getCache('userInfo') ?? {},
+    userMenus: localCache.getCache('userMenus') ?? [],
   }),
   actions: {
     async loginAccountAction(account: IAccount) {
@@ -29,16 +29,20 @@ const useLoginStore = defineStore('login', {
         const id = res.data.id
         const name = res.data.name
         this.token = res.data.token
-        ElMessage.success('登陆成功')
-
-        // 保存token
         localCache.setCache(LOGIN_TOKEN, this.token)
+
         // 获取用户信息
         const userInfoResult = await getUserInfoById(id)
         this.userInfo = userInfoResult.data
         // 获取对应菜单
         const userMenusResult = await getUserMenusByRoleId(id)
         this.userMenus = userMenusResult.data
+
+        // 保存token
+        localCache.setCache('userInfo', userInfoResult.data)
+        localCache.setCache('userMenus', userMenusResult.data)
+
+        ElMessage.success('登陆成功')
 
         // 跳转
         await router.push('/main')
