@@ -9,6 +9,7 @@ import type { IAccount } from '@/types'
 import { localCache } from '@/utils/cache'
 import router from '@/router'
 import { LOGIN_TOKEN } from '@/global/constants'
+import { mapMenusToRoutes } from '@/utils/map-menus'
 
 interface ILoginState {
   token: string
@@ -18,9 +19,9 @@ interface ILoginState {
 
 const useLoginStore = defineStore('login', {
   state: (): ILoginState => ({
-    token: localCache.getCache(LOGIN_TOKEN) ?? '',
-    userInfo: localCache.getCache('userInfo') ?? {},
-    userMenus: localCache.getCache('userMenus') ?? [],
+    token: '',
+    userInfo: {},
+    userMenus: [],
   }),
   actions: {
     async loginAccountAction(account: IAccount) {
@@ -41,6 +42,9 @@ const useLoginStore = defineStore('login', {
         // 保存token
         localCache.setCache('userInfo', userInfoResult.data)
         localCache.setCache('userMenus', userMenusResult.data)
+        //动态添加路由
+        const routes = mapMenusToRoutes(userMenusResult.data)
+        routes.forEach((route) => router.addRoute('main', route))
 
         ElMessage.success('登陆成功')
 
@@ -48,6 +52,21 @@ const useLoginStore = defineStore('login', {
         await router.push('/main')
       } catch (e: any) {
         ElMessage.error(`登录失败${e.response.data}`)
+      }
+    },
+
+    loadLocalCacheAction() {
+      const token = localCache.getCache(LOGIN_TOKEN)
+      const userInfo = localCache.getCache('userInfo')
+      const userMenus = localCache.getCache('userMenus')
+
+      if (token && userInfo && userMenus) {
+        this.token = token
+        this.userInfo = userInfo
+        this.userMenus = userMenus
+
+        const routes = mapMenusToRoutes(userMenus)
+        routes.forEach((route) => router.addRoute('main', route))
       }
     },
   },
