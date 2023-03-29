@@ -2,22 +2,22 @@
   <div class="main-header">
     <div class="menu-icon" @click="handleMenuIconClick">
       <el-icon size="26px">
-        <component :is="isFold ? 'Expand': 'Fold'"/>
+        <component :is="isFold ? 'Expand' : 'Fold'" />
       </el-icon>
     </div>
     <div class="content">
-      <div class="breadcrumb">todo</div>
-      <header-info/>
+      <header-crumb />
+      <header-info />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import HeaderInfo from "@/components/main-header/c-cpns/HeaderInfo.vue";
+import HeaderInfo from '@/components/main-header/c-cpns/HeaderInfo.vue'
+import HeaderCrumb from '@/components/main-header/c-cpns/HeaderCrumb.vue'
+import { ref } from 'vue'
 
 const emits = defineEmits(['foldChange'])
-
 
 const isFold = ref(false)
 const handleMenuIconClick = () => {

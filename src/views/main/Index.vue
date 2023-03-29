@@ -1,26 +1,25 @@
 <template>
   <div class="main">
     <el-container class="main-content">
-      <el-aside :width="isFold ? '80px': '210px'">
-        <main-menu :is-fold="isFold"/>
+      <el-aside :width="isFold ? '80px' : '210px'">
+        <main-menu :is-fold="isFold" />
       </el-aside>
       <el-container>
         <el-header height="48px">
-          <main-header @foldChange="handleFoldChange"/>
+          <main-header @foldChange="handleFoldChange" />
         </el-header>
         <el-main>
           <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
-
   </div>
 </template>
 
 <script setup lang="ts">
 import MainMenu from '@/components/main-menu/Index.vue'
 import MainHeader from '@/components/main-header/Index.vue'
-import {ref} from "vue";
+import { ref } from 'vue'
 
 const isFold = ref(false)
 const handleFoldChange = (flag) => {
@@ -55,7 +54,6 @@ const handleFoldChange = (flag) => {
 
   .el-main {
     color: #333;
-    text-align: center;
     background-color: #f0f2f5;
   }
 }

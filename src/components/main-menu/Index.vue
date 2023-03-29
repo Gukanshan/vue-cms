@@ -1,13 +1,14 @@
 <template>
   <div class="main-menu">
     <div class="logo">
-      <img class="img" src="@/assets/img/logo.svg" alt="logo">
+      <img class="img" src="@/assets/img/logo.svg" alt="logo" />
       <h2 v-show="!isFold" class="title">后台管理系统</h2>
     </div>
     <div class="menu">
       <el-menu
         class="el-menu-vertical-set"
         :collapse="isFold"
+        :default-active="defaultActive"
         text-color="#b7bdc3"
         active-text-color="#fff"
         background-color="#001529"
@@ -15,12 +16,19 @@
         <template v-for="item in userMenus" :key="item.id">
           <el-sub-menu :index="item.id + ''">
             <template #title>
-              <el-icon><component :is="item.icon.split('el-icon-')[1]"></component></el-icon>
-              <span>{{item.name}}</span>
+              <el-icon>
+                <component :is="item.icon.split('el-icon-')[1]"></component>
+              </el-icon>
+              <span>{{ item.name }}</span>
             </template>
 
             <template v-for="subItem in item.children" :key="subItem.id">
-              <el-menu-item :index="subItem.id + ''" @click="handleItemClick(subItem)">{{subItem.name}}</el-menu-item>
+              <el-menu-item
+                :index="subItem.id + ''"
+                @click="handleItemClick(subItem)"
+              >
+                {{ subItem.name }}
+              </el-menu-item>
             </template>
           </el-sub-menu>
         </template>
@@ -30,17 +38,20 @@
 </template>
 
 <script setup lang="ts">
-import useLoginStore from "@/store/login/login";
-import {useRouter} from "vue-router";
+import { computed, ref } from 'vue'
+import useLoginStore from '@/store/login/login'
+import { useRoute, useRouter } from 'vue-router'
+import { mapPathToMenu } from '@/utils/map-menus'
 
 defineProps({
   isFold: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const router = useRouter()
+const route = useRoute()
 const loginStore = useLoginStore()
 const userMenus = loginStore.userMenus
 
@@ -48,10 +59,14 @@ function handleItemClick(item) {
   const url = item.url
   router.push(url)
 }
+
+const defaultActive = computed(() => {
+  const pathMenu = mapPathToMenu(route.path, userMenus)
+  return pathMenu.id + ''
+})
 </script>
 
 <style lang="less" scoped>
-
 .main-menu {
   height: 100%;
   background-color: #001529;
@@ -77,7 +92,6 @@ function handleItemClick(item) {
     color: white;
 
     white-space: nowrap;
-
   }
 }
 
@@ -99,5 +113,4 @@ function handleItemClick(item) {
     background-color: #0a60bd;
   }
 }
-
 </style>
