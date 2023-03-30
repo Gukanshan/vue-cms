@@ -1,15 +1,12 @@
 import { defineStore } from 'pinia'
-import {
-  accountLogin,
-  getUserInfoById,
-  getUserMenusByRoleId,
-} from '@/service/login'
+import { accountLogin, getUserInfoById, getUserMenusByRoleId } from '@/service/login'
 import { ElMessage } from 'element-plus'
 import type { IAccount } from '@/types'
 import { localCache } from '@/utils/cache'
 import router from '@/router'
 import { LOGIN_TOKEN } from '@/global/constants'
 import { mapMenusToRoutes } from '@/utils/map-menus'
+import useMainStore from '@/store/main/main'
 
 interface ILoginState {
   token: string
@@ -42,6 +39,10 @@ const useLoginStore = defineStore('login', {
         // 保存token
         localCache.setCache('userInfo', userInfoResult.data)
         localCache.setCache('userMenus', userMenusResult.data)
+
+        // 请求公共数据
+        const mainStore = useMainStore()
+        mainStore.fetchEntireDataAction()
         //动态添加路由
         const routes = mapMenusToRoutes(userMenusResult.data)
         routes.forEach((route) => router.addRoute('main', route))
@@ -55,7 +56,7 @@ const useLoginStore = defineStore('login', {
       }
     },
 
-    loadLocalCacheAction() {
+    async loadLocalCacheAction() {
       const token = localCache.getCache(LOGIN_TOKEN)
       const userInfo = localCache.getCache('userInfo')
       const userMenus = localCache.getCache('userMenus')
@@ -64,6 +65,9 @@ const useLoginStore = defineStore('login', {
         this.token = token
         this.userInfo = userInfo
         this.userMenus = userMenus
+
+        const mainStore = useMainStore()
+        mainStore.fetchEntireDataAction()
 
         const routes = mapMenusToRoutes(userMenus)
         routes.forEach((route) => router.addRoute('main', route))
